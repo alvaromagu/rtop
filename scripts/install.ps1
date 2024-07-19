@@ -48,7 +48,7 @@ else {
 $env_path = [System.Environment]::GetEnvironmentVariable('Path', 'User')
 # if rtop.exe is not in current user PATH env, add it
 # regex to chheck
-if ($env_path -split ";" -notcontains "$env:USERPROFILE/.rtop") {
+if ($env_path -split ";" -notcontains "$env:USERPROFILE\.rtop") {
   # create a backup of user PATH env
   Write-Host "Writing htop to user PATH, backup of user PATH can be found in $env:USERPROFILE/.rtop/backup_path.txt"
   # take in account that the file might already exist
@@ -62,7 +62,7 @@ if ($env_path -split ";" -notcontains "$env:USERPROFILE/.rtop") {
   # add rtop.exe to PATH permanently
   $env_path += ";$env:USERPROFILE\.rtop;"
   [System.Environment]::SetEnvironmentVariable('Path', $env_path, 'User')
-  Write-Host "rtop.exe added to PATH"
+  Write-Host "rtop.exe added to PATH. Please restart your terminal to use rtop"
 }
 else {
   Write-Host "rtop.exe already in PATH"
