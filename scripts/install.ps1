@@ -39,7 +39,7 @@ if ($env -eq "dev") {
   Copy-Item $path $app_folder
 }
 else {
-  $gh_path = "https://raw.githubusercontent.com/alvaromagu/rtop/main/release/rtop.exe"
+  $gh_path = "https://github.com/alvaromagu/rtop/raw/main/releases/rtop.exe"
   # download file from github
   $req = Invoke-WebRequest -Uri $gh_path
   # if request is successful, init app folder and save content 
