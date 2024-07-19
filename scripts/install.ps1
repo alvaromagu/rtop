@@ -39,19 +39,10 @@ if ($env -eq "dev") {
   Copy-Item $path $app_folder
 }
 else {
+  init_app_folder
   $gh_path = "https://github.com/alvaromagu/rtop/raw/main/releases/rtop.exe"
   # download file from github
-  $req = Invoke-WebRequest -Uri $gh_path
-  # if request is successful, init app folder and save content 
-  # into rtop.exe file in current user's home app directory ($env:USERPROFILE/.rtop/)
-  if ($req.StatusCode -eq 200) {
-    init_app_folder
-    $req.Content | Set-Content "$app_folder/rtop.exe"
-  }
-  else {
-    Write-Host "Error: $path does not exist"
-    exit 1
-  }
+  Invoke-WebRequest -Uri $gh_path -OutFile "$app_folder/rtop.exe"
 }
 
 $env_path = [System.Environment]::GetEnvironmentVariable('Path', 'User')
