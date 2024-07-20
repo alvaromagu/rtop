@@ -4,6 +4,7 @@ use std::process::Command;
 
 fn main() {
   let version = get_cargo_version();
+  println!("Version detected: {}", version);
   // if version exists, exit program with error code and message
   if Path::new("releases/rtop.exe").exists() {    
     println!("Error: rtop.exe already exists in releases directory. Please delete it before building a new version.");
@@ -24,14 +25,5 @@ fn main() {
 }
 
 fn get_cargo_version () -> String {
-  return fs::read_to_string("Cargo.toml")
-    .expect("Something went wrong reading the file")
-    .lines()
-    .find(|line| line.starts_with("version"))
-    .expect("Version not found")
-    .split('=')
-    .skip(1)
-    .collect::<String>()
-    .trim()
-    .replace("\"", "");
+  return env!("CARGO_PKG_VERSION").to_string();
 }
