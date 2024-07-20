@@ -1,8 +1,3 @@
-pub fn round(x: f64, n: i32) -> f64 {
-  let p = 10f64.powi(n);
-  return (x * p).round() / p;
-}
-
 // size units enum
 pub enum SizeUnit {
   KB,

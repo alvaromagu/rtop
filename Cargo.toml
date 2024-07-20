@@ -1,7 +1,8 @@
 [package]
 name = "rtop"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2021"
 
 [dependencies]
+ratatui = "0.27.0"
 sys-info = "0.9.1"
