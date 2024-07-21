@@ -5,12 +5,12 @@
 
 # Usage:
 #   -env: environment to get rtop.exe from
+#     - prod: get rtop.exe from github # default
 #     - dev: get rtop.exe from ./target/release/
-#     - prod: get rtop.exe from github
 
 # Example:
+#   .\scripts\install.ps1 -env prod (or) .\scripts\install.ps1
 #   .\scripts\install.ps1 -env dev
-#   .\scripts\install.ps1 -env prod
 
 param(
   [string]$env = "prod"
@@ -26,7 +26,6 @@ function init_app_folder {
   }
 }
 
-
 if ($env -eq "dev") {
   $path = "./target/release/rtop.exe"
   # if release doesnt exist, throw error
@@ -39,8 +38,24 @@ if ($env -eq "dev") {
   Copy-Item $path $app_folder
 }
 else {
+  # get version from Cargo.toml file stored in github main branch
+  # get content of Cargo.toml file
+  $cargoToml = (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/alvaromagu/rtop/main/Cargo.toml").Content
+  # Define a regular expression to match the version
+  $versionRegex = 'version\s*=\s*"(.*?)"'
+  # Extract the version using the regular expression
+  if ($cargoToml -match $versionRegex) {
+    $version = $matches[1]
+    Write-Output "Current version: [$version]"
+  } else {
+    Write-Output "Version not found"
+    exit 1
+  }
+  Write-Host "Downloading rtop version [$version] from github"
   init_app_folder
-  $gh_path = "https://github.com/alvaromagu/rtop/raw/main/releases/rtop.exe"
+  # download rtop.exe from github
+  # github releases page https://github.com/alvaromagu/rtop/releases/download/v{$version}/rtop.exe
+  $gh_path = "https://github.com/alvaromagu/rtop/releases/download/v$version/rtop.exe"
   # download file from github
   Invoke-WebRequest -Uri $gh_path -OutFile "$app_folder/rtop.exe"
 }
@@ -50,7 +65,7 @@ $env_path = [System.Environment]::GetEnvironmentVariable('Path', 'User')
 # regex to chheck
 if ($env_path -split ";" -notcontains "$env:USERPROFILE\.rtop") {
   # create a backup of user PATH env
-  Write-Host "Writing htop to user PATH, backup of user PATH can be found in $env:USERPROFILE/.rtop/backup_path.txt"
+  Write-Host "info: Writing rtop to user PATH, backup of user PATH can be found in $env:USERPROFILE/.rtop/backup_path.txt"
   # take in account that the file might already exist
   # if it does, overwrite it
   # ONLY SAVE USER PATH, SYSTEM PATH IS NOT SAVED
@@ -62,8 +77,8 @@ if ($env_path -split ";" -notcontains "$env:USERPROFILE\.rtop") {
   # add rtop.exe to PATH permanently
   $env_path += ";$env:USERPROFILE\.rtop;"
   [System.Environment]::SetEnvironmentVariable('Path', $env_path, 'User')
-  Write-Host "rtop.exe added to PATH. Please restart your terminal to use rtop"
+  Write-Host "info: rtop.exe added to PATH. Please restart your terminal to use rtop"
 }
 else {
-  Write-Host "rtop.exe already in PATH"
+  Write-Host "info: rtop.exe already in PATH"
 }
