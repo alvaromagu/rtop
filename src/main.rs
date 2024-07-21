@@ -2,7 +2,7 @@ use std::{io::{self, Stdout}, time::Duration};
 use ratatui::{
   backend::CrosstermBackend, crossterm::{event, execute, terminal::{
     disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen
-  }}, layout::{Constraint, Direction, Layout}, widgets::Paragraph, Frame, Terminal
+  }}, layout::{Alignment, Constraint, Direction, Layout}, widgets::Paragraph, Frame, Terminal
 };
 
 mod rsys_info;
@@ -45,8 +45,8 @@ fn render_app (frame: &mut Frame) {
   let areas = Layout::new(
     Direction::Vertical,
     [
-      Constraint::Length(1),
-      Constraint::Min(1)
+      Constraint::Min(1),
+      Constraint::Length(1)
     ]
   ).split(frame.size());
 
@@ -54,7 +54,7 @@ fn render_app (frame: &mut Frame) {
   let ram_info_str = format!("Total: {:.2} GB, Free: {:.2} GB, Used: {:.2} GB", ram_info.total, ram_info.free, ram_info.used);
   let ram_info = Paragraph::new(ram_info_str);
   frame.render_widget(ram_info,  areas[0]);
-  let quit_message = Paragraph::new("Press 'q' to quit");
+  let quit_message = Paragraph::new("Press 'q' to quit").alignment(Alignment::Right);
   frame.render_widget(quit_message, areas[1]);
 }
 
