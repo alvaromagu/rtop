@@ -2,7 +2,7 @@ use std::{io::{self, Stdout}, time::Duration};
 use ratatui::{
   backend::CrosstermBackend, crossterm::{event, execute, terminal::{
     disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen
-  }}, layout::{Alignment, Constraint, Direction, Layout}, widgets::Paragraph, Frame, Terminal
+  }}, layout::{Alignment, Constraint, Direction, Layout}, widgets::{Block, Gauge, Paragraph}, Frame, Terminal
 };
 
 mod rsys_info;
@@ -45,17 +45,25 @@ fn render_app (frame: &mut Frame) {
   let areas = Layout::new(
     Direction::Vertical,
     [
+      Constraint::Length(3),
       Constraint::Min(1),
       Constraint::Length(1)
     ]
   ).split(frame.size());
+  frame.render_widget(ram_widget(),  areas[0]);
+  frame.render_widget(Block::new(), areas[1]);
+  let quit_message = Paragraph::new("Press 'q' to quit").alignment(Alignment::Right);
+  frame.render_widget(quit_message, areas[2]);
+}
 
+fn ram_widget <'a> () -> Gauge<'a> {
   let ram_info = rsys_info::ram_info();
   let ram_info_str = format!("Total: {:.2} GB, Free: {:.2} GB, Used: {:.2} GB", ram_info.total, ram_info.free, ram_info.used);
-  let ram_info = Paragraph::new(ram_info_str);
-  frame.render_widget(ram_info,  areas[0]);
-  let quit_message = Paragraph::new("Press 'q' to quit").alignment(Alignment::Right);
-  frame.render_widget(quit_message, areas[1]);
+  return Gauge::default()
+    .block(Block::bordered().title("RAM usage"))
+    .gauge_style(ratatui::style::Style::default().fg(ratatui::style::Color::Cyan))
+    .percent(ram_info.used_percent as u16)
+    .label(ram_info_str);
 }
 
 fn should_quit () -> Result<bool, ()> {
