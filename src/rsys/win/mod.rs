@@ -1,12 +1,11 @@
 use serde::Deserialize;
 use wmi::{COMLibrary, WMIConnection};
 
-#[path ="../../rmath.rs"]
+#[path = "../../rmath.rs"]
 mod rmath;
 
 pub struct RamInfo {
   pub total: f64,
-  pub free: f64,
   pub used: f64,
   pub used_percent: f64,
 }
@@ -20,12 +19,19 @@ pub struct Win32Ram {
 }
 
 impl Win32Ram {
-  pub fn to (&self) -> RamInfo {
-    let total = rmath::parse_data_size(self.TotalVisibleMemorySize, rmath::SizeUnit::KB, rmath::SizeUnit::GB);
-    let free = rmath::parse_data_size(self.FreePhysicalMemory, rmath::SizeUnit::KB, rmath::SizeUnit::GB);
+  pub fn to(&self) -> RamInfo {
+    let total = rmath::parse_data_size(
+      self.TotalVisibleMemorySize,
+      rmath::SizeUnit::KB,
+      rmath::SizeUnit::GB,
+    );
+    let free = rmath::parse_data_size(
+      self.FreePhysicalMemory,
+      rmath::SizeUnit::KB,
+      rmath::SizeUnit::GB,
+    );
     RamInfo {
       total,
-      free,
       used: total - free,
       used_percent: (total - free) / total * 100f64,
     }
