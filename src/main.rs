@@ -5,7 +5,7 @@ use ratatui::{
   }}, layout::{Alignment, Constraint, Direction, Layout}, widgets::{Block, Gauge, Paragraph}, Frame, Terminal
 };
 
-mod rsys_info;
+mod rsys;
 
 fn main() -> Result<(), ()> {
   let mut terminal = setup_terminal().expect("setup failed");
@@ -57,7 +57,7 @@ fn render_app (frame: &mut Frame) {
 }
 
 fn ram_widget <'a> () -> Gauge<'a> {
-  let ram_info = rsys_info::ram_info();
+  let ram_info = rsys::mem().expect("could not get memory info");
   let ram_info_str = format!("Total: {:.2} GB, Free: {:.2} GB, Used: {:.2} GB", ram_info.total, ram_info.free, ram_info.used);
   return Gauge::default()
     .block(Block::bordered().title("RAM usage"))

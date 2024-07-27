@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 ratatui = "0.27.0"
-sys-info = "0.9.1"
+serde = "1.0.204"
+wmi = "0.13.3"
