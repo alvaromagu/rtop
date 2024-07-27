@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use wmi::{COMLibrary, WMIConnection};
 
-#[path = "../../rmath.rs"]
+#[path ="../../rmath/mod.rs"]
 mod rmath;
 
 pub struct RamInfo {
