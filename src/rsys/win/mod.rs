@@ -4,6 +4,8 @@ use wmi::{COMLibrary, WMIConnection};
 #[path ="../../rmath/mod.rs"]
 mod rmath;
 
+pub use rmath::SizeUnit;
+
 pub struct RamInfo {
   pub total: f64,
   pub used: f64,
@@ -22,13 +24,13 @@ impl Win32Ram {
   pub fn to(&self) -> RamInfo {
     let total = rmath::parse_data_size(
       self.TotalVisibleMemorySize,
-      rmath::SizeUnit::KB,
+      SizeUnit::KB,
       rmath::SizeUnit::GB,
     );
     let free = rmath::parse_data_size(
       self.FreePhysicalMemory,
-      rmath::SizeUnit::KB,
-      rmath::SizeUnit::GB,
+      SizeUnit::KB,
+      SizeUnit::GB,
     );
     RamInfo {
       total,
