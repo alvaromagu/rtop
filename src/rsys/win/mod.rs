@@ -52,3 +52,44 @@ pub fn mem() -> Result<RamInfo, Box<dyn std::error::Error>> {
   let os_info = &os_info[0];
   Ok(os_info.to())
 }
+
+pub struct CoreInfo {
+  pub usage: f64,
+}
+
+pub struct CpuInfo {
+  pub cores: Vec<CoreInfo>
+}
+
+#[allow(non_camel_case_types)]
+#[allow(non_snake_case)]
+#[derive(Deserialize, Debug)]
+pub struct Win32Cpu {
+  pub PercentProcessorTime: f64,
+}
+
+impl Win32Cpu {
+  pub fn to(&self) -> CoreInfo {
+    CoreInfo {
+      usage: self.PercentProcessorTime,
+    }
+  }
+}
+
+pub fn cpu() -> Result<CpuInfo, Box<dyn std::error::Error>> {
+  let com_con = COMLibrary::new()?;
+  let wmi_con = WMIConnection::new(com_con.into())?;
+  // Get-WmiObject -Query "SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor" | select Name, PercentProcessorTime, Frequency_Object
+  let cpu_info: Vec<Win32Cpu> = wmi_con
+    .raw_query("SELECT PercentProcessorTime, Frequency_Object FROM Win32_PerfFormattedData_PerfOS_Processor")?;
+  if cpu_info.len() < 1 {
+    return Err("No data returned".into());
+  }
+  let mut cores = Vec::new();
+  for core in cpu_info {
+    cores.push(core.to());
+  }
+  Ok(CpuInfo {
+    cores
+  })
+}
